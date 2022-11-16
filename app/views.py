@@ -48,7 +48,13 @@ def settings(request):
 
 
 def hot(request):
-    return render(request, 'hot_questions.html')
+    page_object = paginate(models.Questions, request, 3)
+    context = {
+        'questions': page_object.object_list,
+        'page_object': page_object
+    }
+
+    return render(request, 'hot_questions.html', context=context)
 
 
 def tag(request, tag_name: string):

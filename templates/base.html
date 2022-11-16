@@ -28,9 +28,9 @@
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
             </div>
-            <form action="{% url 'ask' %}">
+            <a href="{% url 'ask' %}">
                 <button class="btn btn-primary">ASK</button>
-            </form>
+            </a>
             {% if request.user.is_authenticated %}
             <div class="user-block">
                 <div class="row">
