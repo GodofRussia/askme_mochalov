@@ -1,0 +1,101 @@
+<!doctype html>
+{% load static %}
+
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ASKME</title>
+
+    <link href="{% static '/css/bootstrap.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static '/css/style.css' %}" rel="stylesheet">
+{#    <link href="{% static '/js/like.js' %}" rel="script">#}
+</head>
+
+<body class="d-flex flex-column h-100">
+<header style="margin-bottom: 30px">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url "index" %}">ASKME</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="search">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+            <form action="{% url 'ask' %}">
+                <button class="btn btn-primary">ASK</button>
+            </form>
+            {% if request.user.is_authenticated %}
+            <div class="user-block">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="avatar">
+                            <img src="{% static '/img/avatar-1.png' %}" alt="" />
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <h5 class="user-name">UserName</h5>
+                        <div class="row">
+                            <div class="col">
+                                <a href="{% url 'settings' %}">settings</a>
+                            </div>
+                            <div class="col">
+                                <a href="">log out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="unreg-user-block">
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'login' %}">log in</a>
+                    </div>
+                    <div class="col">
+                        <a href="{% url 'signup' %}">register</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+    <div class="container">
+        {% block title %}
+        {% endblock %}
+        <div class="row mt-3">
+            <div class="col-8">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="col-4">
+                <div class="tags-area">
+                    <h2>Popular tags</h2>
+                    <a>tag1</a>
+                    <a>tag2</a>
+                    <a>tag3</a>
+                </div>
+                <div class="members-area">
+                    <h2>Best members</h2>
+                    <div class="mt-1"><a>member1</a></div>
+                    <div class="mt-1"><a>member2</a></div>
+                    <div class="mt-1"><a>member3</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

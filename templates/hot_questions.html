@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <h1>Hot Questions</h1>
+{% endblock %}
+
+{% block content %}
+    {% include "include/quest_temp.html" %}
+    {% include "include/quest_temp.html" %}
+    {% include "include/quest_temp.html" %}
+    <script src="{% static "/js/like.js" %}"></script>
+    {% include "include/paginator.html" %}
+{% endblock %}
+
+
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
