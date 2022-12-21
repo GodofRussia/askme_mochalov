@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    'bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -75,14 +76,19 @@ WSGI_APPLICATION = 'askme.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'sql': {
         'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'db_django',
+        'USER': 'ilya',
+        'PASSWORD': 'I_love_web1111',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'OPTIONS': {
-            'read_default_file': '/path/to/my.cnf',
+            'init_command': 'SET default_storage_engine=INNODB'
         },
     }
 }

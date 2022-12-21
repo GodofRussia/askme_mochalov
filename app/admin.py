@@ -5,5 +5,6 @@ from app import models
 admin.site.register(models.Question)
 admin.site.register(models.Answer)
 admin.site.register(models.Tag)
-admin.site.register(models.Rating)
+admin.site.register(models.QuestionRating)
+admin.site.register(models.AnswerRating)
 admin.site.register(models.Profile)

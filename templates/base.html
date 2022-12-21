@@ -46,7 +46,7 @@
                                 <a href="{% url 'settings' %}">settings</a>
                             </div>
                             <div class="col">
-                                <a href="">log out</a>
+                                <a href="{% url 'logout' %}">log out</a>
                             </div>
                         </div>
                     </div>
@@ -81,9 +81,15 @@
             <div class="col-4">
                 <div class="tags-area">
                     <h2>Popular tags</h2>
-                    <a>tag1</a>
-                    <a>tag2</a>
-                    <a>tag3</a>
+                    <div class="col">
+                        {% for tag in top_tags %}
+                            <a>{{ tag }}</a>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="col">
+                            {% endif %}
+                        {% endfor %}
+                   </div>
                 </div>
                 <div class="members-area">
                     <h2>Best members</h2>

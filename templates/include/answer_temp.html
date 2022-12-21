@@ -7,20 +7,19 @@
                 <img src="{% static '/img/avatar-1.png' %}" alt="" />
             </div>
             <div class="like">
-                <span class="plus cursor">+</span> <span class="minus cursor">-</span>  <span class="counter">0</span>
+                <span class="plus cursor">+</span> <span class="minus cursor">-</span> <span class="counter">0</span>
             </div>
         </div>
         <div class="col-10">
             <div class="question-text">
                 {{ answer.text }}
             </div>
-            <div class="form-check check-correct">
+            <form class="form-check check-correct">
                 <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
                 <label class="form-check-label" for="disabledFieldsetCheck">
                     Correct
                 </label>
-            </div>
-
+            </form>
         </div>
     </div>
 </div>

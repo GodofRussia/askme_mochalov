@@ -17,12 +17,12 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <a href="{% url 'question' question_id=question.id %}">answers({{ question.answers_count }})</a>
+                    <a href="{% url 'question' question_id=question.id %}">answers({{ question.get_answers_count }})</a>
                 </div>
                 <div class="col">
                 <p>Tags:
-                    {% for tag in question.tags %}
-                     <a href="{% url 'tag' tag_name=tag.tag_name_ %}">{{ tag.tag_name_ }}</a>
+                    {% for tag in question.get_tags %}
+                     <a href="{% url 'tag' tag_name=tag.tag_name %}">{{ tag }}</a>
                     {% endfor %}
                 </p>
                 </div>

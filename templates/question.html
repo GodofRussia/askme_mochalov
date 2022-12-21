@@ -19,8 +19,8 @@
             </div>
             <div class="row">
             <p>Tags:
-                {% for tag in question.tags %}
-                     <a href="{% url 'tag' tag_name=tag.tag_name_ %}">{{ tag.tag_name_ }}</a>
+                {% for tag in question.get_tags %}
+                     <a href="{% url 'tag' tag_name=tag.tag_name %}">{{ tag }}</a>
                 {% endfor %}
                 </p>
             </div>
@@ -34,9 +34,9 @@
     <script src="{% static "/js/like.js" %}"></script>
     {% include 'include/paginator.html' %}
         <hr style="color: black">
-    <div class="form-floating">
+    <form class="form-floating">
         <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
         <label for="floatingTextarea2">Enter your answer here</label>
         <button class="col-md-2 mb-3 mt-3 btn btn-outline-success" type="submit">Answer</button>
-    </div>
+    </form>
 {% endblock %}
