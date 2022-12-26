@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
 {% load static %}
 
 {% block content %}
@@ -9,7 +10,7 @@
                 <img src="{% static '/img/avatar-1.png' %}" alt="" />
             </div>
             <div class="like">
-                <span class="plus cursor">+</span> <span class="minus cursor">-</span>  <span class="counter">0</span>
+                <span class="plus cursor">+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
             </div>
         </div>
         <div class="col-10">
@@ -31,12 +32,14 @@
     {% for answer in answers %}
         {% include 'include/answer_temp.html' %}
     {% endfor %}
+    <div id="contact"></div>
     <script src="{% static "/js/like.js" %}"></script>
     {% include 'include/paginator.html' %}
         <hr style="color: black">
-    <form class="form-floating">
-        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
-        <label for="floatingTextarea2">Enter your answer here</label>
+    <form class="form-floating" action="{% url 'question' question_id=question.id %}" method="post"> {% csrf_token %}
+    {% bootstrap_form form %}
+{#        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>#}
+{#        <label for="floatingTextarea2">Enter your answer here</label>#}
         <button class="col-md-2 mb-3 mt-3 btn btn-outline-success" type="submit">Answer</button>
     </form>
 {% endblock %}

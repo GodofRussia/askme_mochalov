@@ -21,11 +21,7 @@ from django.shortcuts import render
 #     return questions
 
 
-def paginate(objects_list, request, per_page=10):
-    try:
-        page_number = int(request.GET.get('page', 1))
-    except ValueError:
-        raise Http404
+def paginate(objects_list, page_number, per_page=10):
     paginator = Paginator(objects_list, per_page)
     try:
         page_object = paginator.get_page(page_number)
@@ -34,13 +30,19 @@ def paginate(objects_list, request, per_page=10):
     return page_object
 
 
+class AnswerModelManager(models.Manager):
+    def get_hot_answer(self):
+        return self.order_by('-rating')
+
+
 class QuestionModelManager(models.Manager):
     def get_hot_questions(self):
-        return self.annotate(q_count=(Count('questionRatings', filter=Q(questionRatings__value=True),
-                                            distinct=True) - Count('questionRatings', filter=
-                             Q(questionRatings__value=False), distinct=True))
-                             ).order_by('-q_count')
+        return self.order_by('-rating')
 
+    # annotate(q_count=(Count('questionRatings', filter=Q(questionRatings__value=True),
+    #                         distinct=True) - Count('questionRatings', filter=
+    # Q(questionRatings__value=False), distinct=True))
+    #          ).order_by('-q_count')
     def get_new_questions(self):
         new_questions = self.order_by('-creation_date')
         return new_questions
@@ -49,10 +51,17 @@ class QuestionModelManager(models.Manager):
         return self.filter(tag__tag_name=tag_name)
 
 
+class ProfileModelManager(models.Manager):
+    def get_top_members(self):
+        return self.order_by('-ratings')
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=30)
     avatar = models.ImageField(null=True, blank=True, default='static/img/avatar-1.png')
+    ratings = models.IntegerField(default=0)
+    objects = ProfileModelManager()
 
     def __str__(self):
         return self.user.username
@@ -74,10 +83,11 @@ class Tag(models.Model):
 class Question(models.Model):
     title = models.CharField(max_length=50)
     text = models.TextField(max_length=200)
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField()
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="questions")
     tag = models.ManyToManyField(Tag, blank=True, related_name="questions")
     objects = QuestionModelManager()
+    rating = models.IntegerField(default=0)
 
     def get_tags(self):
         return self.tag.all()
@@ -93,6 +103,8 @@ class Answer(models.Model):
     text = models.TextField(max_length=200)
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    rating = models.IntegerField(default=0)
+    objects = AnswerModelManager()
 
     # class Meta:
     #     constraints = [
