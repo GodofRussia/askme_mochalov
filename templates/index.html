@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <div class="row">
+        <div class="col-4 align-self-start">
+            <h1>New Questions</h1>
+        </div>
+        <div class="col-8 align-self-center">
+            <a href="{% url 'hot'%}">Hot questions</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% for question in questions %}
+        {% include "include/quest_temp.html" %}
+    {% endfor %}
+    {% include "include/paginator.html" %}
+{% endblock %}
+
+
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
