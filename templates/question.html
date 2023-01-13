@@ -2,15 +2,16 @@
 {% load bootstrap5 %}
 {% load static %}
 
+
 {% block content %}
 <div class="single-question">
     <div class="row">
         <div class="col-2">
             <div class="question-avatar">
-                <img src="{% static '/img/avatar-1.png' %}" alt="" />
+                <img src="{{ question.profile.avatar.url }}" alt="" />
             </div>
             <div class="like">
-                <span class="plus cursor">+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
+                <span class="plus cursor" data-question-id="{{ question.id }}">+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
             </div>
         </div>
         <div class="col-10">
@@ -30,13 +31,13 @@
 </div>
     <hr style="color: black">
     {% for answer in answers %}
-        {% include 'include/answer_temp.html' %}
+        <div {% if forloop.last is True %} id="contact" {% endif %}>
+            {% include 'include/answer_temp.html' %}
+        </div>
     {% endfor %}
-    <div id="contact"></div>
-    <script src="{% static "/js/like.js" %}"></script>
     {% include 'include/paginator.html' %}
         <hr style="color: black">
-    <form class="form-floating" action="{% url 'question' question_id=question.id %}" method="post"> {% csrf_token %}
+    <form class="form-floating" method="post"> {% csrf_token %}
     {% bootstrap_form form %}
 {#        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>#}
 {#        <label for="floatingTextarea2">Enter your answer here</label>#}

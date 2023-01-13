@@ -1,24 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
-from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
 from django.urls import reverse
 
 from django.db.models import Q, Count
-from django.shortcuts import render
 # Create your models here.
-
-
-# def find_questions(tag_name):
-#     questions = []
-#     for question_item in Questions:
-#         tags = question_item.get('tags')
-#         for tag_item in tags:
-#             if tag_item.get('tag_name_').__contains__(tag_name) and not questions.__contains__(question_item):
-#                 questions.append(question_item)
-#
-#     return questions
 
 
 def paginate(objects_list, page_number, per_page=10):
@@ -39,10 +27,6 @@ class QuestionModelManager(models.Manager):
     def get_hot_questions(self):
         return self.order_by('-rating')
 
-    # annotate(q_count=(Count('questionRatings', filter=Q(questionRatings__value=True),
-    #                         distinct=True) - Count('questionRatings', filter=
-    # Q(questionRatings__value=False), distinct=True))
-    #          ).order_by('-q_count')
     def get_new_questions(self):
         new_questions = self.order_by('-creation_date')
         return new_questions
@@ -57,9 +41,9 @@ class ProfileModelManager(models.Manager):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     nickname = models.CharField(max_length=30)
-    avatar = models.ImageField(null=True, blank=True, default='static/img/avatar-1.png')
+    avatar = models.ImageField(default='anonymous_avatar.png', upload_to='avatar/img/%Y/%m/%d/')
     ratings = models.IntegerField(default=0)
     objects = ProfileModelManager()
 
@@ -73,7 +57,7 @@ class TagManager(models.Manager):
 
 
 class Tag(models.Model):
-    tag_name = models.CharField(max_length=10)
+    tag_name = models.CharField(max_length=25)
     objects = TagManager()
 
     def __str__(self):
@@ -83,7 +67,7 @@ class Tag(models.Model):
 class Question(models.Model):
     title = models.CharField(max_length=50)
     text = models.TextField(max_length=200)
-    creation_date = models.DateField()
+    creation_date = models.DateField(default=datetime.now)
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="questions")
     tag = models.ManyToManyField(Tag, blank=True, related_name="questions")
     objects = QuestionModelManager()
@@ -95,6 +79,9 @@ class Question(models.Model):
     def get_answers_count(self):
         return self.answers.count()
 
+    def get_url(self):
+        return reverse("question", kwargs={"question_id": self.id})
+
     def __str__(self):
         return self.title
 
@@ -105,14 +92,6 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     rating = models.IntegerField(default=0)
     objects = AnswerModelManager()
-
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             name="%(app_label)s_%(class)s_name_not_empty",
-    #             check=~models.Q(profile=models.F('question'))
-    #         )
-    #     ]
 
 
 class QuestionRating(models.Model):
