@@ -14,8 +14,9 @@ $(".plus").on('click', function () {
                   'content-type': 'application/json'
               },
               body: JSON.stringify({
-                    question_id: $(this).parent(".like").data('id'),
-                    type: 'like'
+                    id: $(this).parent(".like").data('id'),
+                    type: 'like',
+                    is_question: $(this).parent(".like").data('is-question')
                   }
               )
           }
@@ -50,8 +51,9 @@ $(".minus").on('click', function () {
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                  question_id: $(this).parent(".like").data('id'),
-                  type: 'dislike'
+                  id: $(this).parent(".like").data('id'),
+                  type: 'dislike',
+                  is_question: $(this).parent(".like").data('is-question')
               }),
           }
       )

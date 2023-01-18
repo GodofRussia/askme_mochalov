@@ -8,6 +8,7 @@
 {% block content %}
     <form class="row g-3 mt-2" action="{% url 'login' %}" method="post"> {% csrf_token %}
         {% bootstrap_form form %}
+        <input type="hidden" name="continue" value="{{ request.GET.continue }}">
 {#        <label for="inputTitle" class="col-sm-2 col-form-label">Login</label>#}
 {#            <div class="col-sm-6">#}
 {#                <div class="input-group has-validation">#}

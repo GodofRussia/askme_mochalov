@@ -101,8 +101,8 @@ def login_user(request):
             user = auth.authenticate(request=request, **user_form.cleaned_data)
             if user:
                 login(request, user)
-                url = request.GET.get('continue', '/')
-                return HttpResponseRedirect(url)
+                next = request.POST.get('continue', '/')
+                return HttpResponseRedirect(next)
             else:
                 user_form.add_error(field=None, error="Wrong username or password!")
 
@@ -140,6 +140,7 @@ def signup(request):
     return render(request, 'signup.html', context=context)
 
 
+@login_required(login_url='login',redirect_field_name="continue")
 def settings(request):
     if request.method == 'GET':
         user = model_to_dict(request.user)
@@ -160,7 +161,7 @@ def settings(request):
     return render(request, 'settings.html', context=context)
 
 
-@login_required
+@login_required(login_url='login', redirect_field_name="continue")
 def logout(request):
     auth.logout(request)
     url = request.GET.get('continue', '/')
@@ -220,27 +221,81 @@ def tag(request, tag_name: string):
 def like(request):
     data = json.loads(request.body.decode())
     type = data['type']
-    question_id = data['question_id']
-    question_item = models.Question.objects.get(id=question_id)
-    try:
-        question_item.questionRatings.get(profile=request.user.profile)
-    except models.QuestionRating.DoesNotExist:
-        if type == 'like':
-            question_item.rating += 1
-            value = True
-        else:
-            question_item.rating -= 1
-            value = False
+    id = data['id']
+    is_question = data['is_question']
+    if is_question == "True":
+        question_item = models.Question.objects.get(id=id)
+        try:
+            question_item.questionRatings.get(profile=request.user.profile)
+        except models.QuestionRating.DoesNotExist:
+            if type == 'like':
+                question_item.rating += 1
+                value = True
+            else:
+                question_item.rating -= 1
+                value = False
 
-        question_like = models.QuestionRating.objects.create(question=question_item, profile=request.user.profile, value=value)
-        question_item.save()
-        question_like.save()
-        return JsonResponse({
-            "status": "ok",
-            'likes_count': question_item.rating,
-        })
+            question_like = models.QuestionRating.objects.create(question=question_item, profile=request.user.profile,
+                                                                 value=value)
+            question_item.save()
+            question_like.save()
+            return JsonResponse({
+                "status": "ok",
+                'likes_count': question_item.rating,
+            })
+    else:
+        answer_item = models.Answer.objects.get(id=id)
+        try:
+            answer_item.answerRatings.get(profile=request.user.profile)
+        except models.AnswerRating.DoesNotExist:
+            if type == 'like':
+                answer_item.rating += 1
+                value = True
+            else:
+                answer_item.rating -= 1
+                value = False
+
+            answer_like = models.AnswerRating.objects.create(answer=answer_item, profile=request.user.profile,
+                                                                 value=value)
+            answer_item.save()
+            answer_like.save()
+            return JsonResponse({
+                "status": "ok",
+                'likes_count': answer_item.rating,
+            })
 
     return JsonResponse({
         "status": "error",
         "message": "You've already made a rating"
     })
+
+
+@login_required
+@require_POST
+def make_correct(request):
+    data = json.loads(request.body.decode())
+    question_id = data['question_id']
+    answer_id = data['answer_id']
+    status = data['status']
+    answers = models.Answer.objects.filter(question_id=question_id).all()
+    has_correct_answer = False
+    for answer in answers:
+        if answer.id != answer_id and answer.is_correct:
+            has_correct_answer = True
+    if has_correct_answer:
+        return JsonResponse({
+            "status": "error",
+            "message": "You've already chosen a right answer"
+        })
+    answer = models.Answer.objects.get(id=answer_id)
+    if not status:
+        answer.is_correct = False
+        print("none")
+    else:
+        answer.is_correct = True
+        print("yes")
+    answer.save()
+    return JsonResponse({
+            "status": "ok",
+            "answer_status": answer.is_correct
+        })

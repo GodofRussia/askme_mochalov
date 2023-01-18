@@ -47,7 +47,7 @@
                                 <a href="{% url 'settings' %}">settings</a>
                             </div>
                             <div class="col">
-                                <a href="{% url 'logout' %}">log out</a>
+                                <a href="{% url 'logout' %}?continue={{ request.path|urlencode }}">log out</a>
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
             <div class="unreg-user-block">
                 <div class="row">
                     <div class="col">
-                        <a href="{% url 'login' %}">log in</a>
+                        <a href="{% url 'login' %}?continue={{ request.path|urlencode }}">log in</a>
                     </div>
                     <div class="col">
                         <a href="{% url 'signup' %}">register</a>
@@ -109,6 +109,7 @@
         </div>
 </main>
 <script src="{% static 'js/like.js' %}"></script>
+<script src="{% static 'js/correct_answer.js' %}"></script>
 <script>
     var csrftoken = '{{ csrf_token }}';
 </script>

@@ -10,8 +10,8 @@
             <div class="question-avatar">
                 <img src="{{ question.profile.avatar.url }}" alt="" />
             </div>
-            <div class="like">
-                <span class="plus cursor" data-question-id="{{ question.id }}">+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
+            <div class="like" data-is-question="True" data-count="{{ question.rating }}" data-id="{{ question.id }}">
+                <span class="plus cursor" >+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
             </div>
         </div>
         <div class="col-10">

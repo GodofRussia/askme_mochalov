@@ -6,7 +6,7 @@
             <div class="avatar">
                 <img src="{{ question.profile.avatar.url }}" alt="" />
             </div>
-            <div class="like" data-count="{{ question.rating }}" data-id="{{ question.id }}">
+            <div class="like" data-is-question="True" data-count="{{ question.rating }}" data-id="{{ question.id }}">
                 <span class="plus cursor">+</span> <span class="minus cursor">-</span> <span class="counter"></span>
             </div>
         </div>
