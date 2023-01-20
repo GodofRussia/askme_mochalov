@@ -290,10 +290,8 @@ def make_correct(request):
     answer = models.Answer.objects.get(id=answer_id)
     if not status:
         answer.is_correct = False
-        print("none")
     else:
         answer.is_correct = True
-        print("yes")
     answer.save()
     return JsonResponse({
             "status": "ok",
