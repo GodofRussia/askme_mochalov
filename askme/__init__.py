@@ -1,4 +1,4 @@
-import pymysql
+# import pymysql
 # import mysql.connector
 #
 # dataBase = mysql.connector.connect(
@@ -12,4 +12,4 @@ import pymysql
 #
 # # creating database
 # cursorObject.execute("CREATE DATABASE db_django")
-pymysql.install_as_MySQLdb()
+# pymysql.install_as_MySQLdb()

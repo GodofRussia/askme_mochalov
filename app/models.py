@@ -6,6 +6,9 @@ from django.core.paginator import Paginator, EmptyPage
 from django.urls import reverse
 
 from django.db.models import Q, Count
+from django.utils import timezone
+
+
 # Create your models here.
 
 
@@ -37,14 +40,13 @@ class QuestionModelManager(models.Manager):
 
 class ProfileModelManager(models.Manager):
     def get_top_members(self):
-        return self.order_by('-ratings')
+        return self.annotate(q_count=(Count('questions') + Count('answers'))).order_by('-q_count')[:9]
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     nickname = models.CharField(max_length=30)
     avatar = models.ImageField(default='anonymous_avatar.png', upload_to='avatar/img/%Y/%m/%d/')
-    ratings = models.IntegerField(default=0)
     objects = ProfileModelManager()
 
     def __str__(self):
@@ -67,7 +69,7 @@ class Tag(models.Model):
 class Question(models.Model):
     title = models.CharField(max_length=50)
     text = models.TextField(max_length=200)
-    creation_date = models.DateField(default=datetime.now)
+    creation_date = models.DateField(default=timezone.now().time())
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="questions")
     tag = models.ManyToManyField(Tag, blank=True, related_name="questions")
     objects = QuestionModelManager()

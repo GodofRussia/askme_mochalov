@@ -44,3 +44,19 @@
         <button class="col-md-2 mb-3 mt-3 btn btn-outline-success" type="submit">Answer</button>
     </form>
 {% endblock %}
+
+{% block jscode %}
+    <script src="https://unpkg.com/centrifuge@3.1.0/dist/centrifuge.js"></script>
+    {% if request.user.is_authenticated %}
+        <script>
+            var centrifuge = new Centrifuge ("{{ cent_ws_url }}", { token: "{{ secret_token }}" });
+            var sub = centrifuge.newSubscription("{{ cent_canal }}");
+            console.log("{{ cent_canal }}");
+            sub.on("publication", function (message) {
+                console.log(message.data);
+            });
+            sub.subscribe();
+            centrifuge.connect();
+        </script>
+        {% endif %}
+{% endblock %}

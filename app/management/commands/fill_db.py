@@ -4,6 +4,7 @@ import random
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q, Count
+from django.utils import timezone
 
 from app import models
 
@@ -15,7 +16,7 @@ def create_users(ratio: int):
                  'qqjfqg323fasf', 'gek235la;vv', '4wggqg543']
     users_to_create = [models.User(username=f'User {user_id}',
                                    password=make_password(passwords[user_id % len(passwords)]),
-                                   last_login=datetime.datetime.now()
+                                   last_login=timezone.now().time()
                                    ) for user_id in range(1, 1 + ratio)]
     models.User.objects.bulk_create(users_to_create)
     first_user_id = models.User.objects.first().id

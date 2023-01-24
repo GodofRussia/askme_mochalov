@@ -1,6 +1,6 @@
 $(".check-correct").on('click', function (e) {
       const request = new Request(
-          'http://127.0.0.1:8000/make_correct/',
+          'http://127.0.0.1/make_correct/',
           {
               method: 'POST',
               headers: {

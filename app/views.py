@@ -1,9 +1,12 @@
 import string
 import json
+import time
 
+import jwt
 from django.contrib import auth
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
@@ -12,7 +15,27 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_POST
 from . import models
 from . import forms
+from askme.settings import CENTRIFUGO_URL, CENTRIFUGO_API_KEY, CENTRIFUGO_TOKEN_HMAC_SECRET_KEY, CENTRIFUGO_WS_URL
 from .models import paginate
+
+from cent import Client
+
+# initialize client instance.
+client = Client(CENTRIFUGO_URL, api_key=CENTRIFUGO_API_KEY, timeout=1)
+
+
+def save_in_cache():
+    users = list(models.Profile.objects.get_top_members())
+    tags = list(models.Tag.objects.get_top_tags())
+    cache.set('rating', users, 70)
+    cache.set('best_tags', tags, 70)
+
+
+def prepare_context(context):
+    return {
+        'best_members': cache.get('rating'),
+        'top_tags': cache.get('best_tags')
+    }
 
 
 def index(request):
@@ -31,8 +54,8 @@ def index(request):
     context = {
         'questions': page_object.object_list,
         'page_object': page_object,
-        'top_tags': top_tags,
-        'best_members': best_members
+        # 'top_tags': top_tags,
+        # 'best_members': best_members
     }
     return render(request, 'index.html', context=context)
 
@@ -48,6 +71,7 @@ def question(request, question_id: int):
         if answer_form.is_valid():
             if not request.user.is_anonymous:
                 answer = answer_form.save(request.user, question_item)
+                client.publish(f"question_{question_id}", model_to_dict(answer))
                 page_number = ((models.Answer.objects.filter(question=question_item).count() + 1) // 2)
                 return redirect(reverse("question", kwargs={"question_id": question_id}) + f"?page={page_number}#contact")
             else:
@@ -57,14 +81,20 @@ def question(request, question_id: int):
     except ValueError:
         raise HttpResponseBadRequest
     page_object = paginate(question_item.answers.all(), page_number, 2)
-    context = {
+    context = {}
+    if request.user.is_authenticated:
+        user_id = request.user.id
+        context['secret_token'] = jwt.encode({"sub": user_id, "exp": int(time.time()) + 10 * 60},
+                                             CENTRIFUGO_TOKEN_HMAC_SECRET_KEY)
+        context['cent_canal'] = f'question_{question_id}'
+        context['cent_ws_url'] = CENTRIFUGO_WS_URL
+
+    context.update({
         'question': question_item,
         'answers': page_object.object_list,
         'page_object': page_object,
-        'top_tags': top_tags,
-        'best_members': best_members,
         'form': answer_form
-    }
+    })
     return render(request, 'question.html', context=context)
 
 
@@ -84,8 +114,6 @@ def ask(request):
     top_tags = models.Tag.objects.get_top_tags
     best_members = models.Profile.objects.get_top_members()
     context = {
-        'top_tags': top_tags,
-        'best_members': best_members,
         'form': question_form
     }
     return render(request, 'ask.html', context=context)
@@ -110,8 +138,6 @@ def login_user(request):
     best_members = models.Profile.objects.get_top_members()
     context = {
         'form': user_form,
-        'top_tags': top_tags,
-        'best_members': best_members,
     }
     return render(request, 'login.html', context=context)
 
@@ -134,13 +160,11 @@ def signup(request):
     best_members = models.Profile.objects.get_top_members()
     context = {
         'form': user_form,
-        'top_tags': top_tags,
-        'best_members': best_members,
     }
     return render(request, 'signup.html', context=context)
 
 
-@login_required(login_url='login',redirect_field_name="continue")
+@login_required(login_url='login', redirect_field_name="continue")
 def settings(request):
     if request.method == 'GET':
         user = model_to_dict(request.user)
@@ -154,8 +178,6 @@ def settings(request):
     top_tags = models.Tag.objects.get_top_tags
     best_members = models.Profile.objects.get_top_members()
     context = {
-        'top_tags': top_tags,
-        'best_members': best_members,
         'form': user_form
     }
     return render(request, 'settings.html', context=context)
@@ -185,8 +207,6 @@ def hot(request):
     context = {
         'questions': page_object.object_list,
         'page_object': page_object,
-        'top_tags': top_tags,
-        'best_members': best_members
     }
 
     return render(request, 'hot_questions.html', context=context)
@@ -209,8 +229,6 @@ def tag(request, tag_name: string):
         'questions': page_object.object_list,
         'tag_name': tag_name,
         'page_object': page_object,
-        'top_tags': top_tags,
-        'best_members': best_members
     }
 
     return render(request, 'questions_by_tag.html', context=context)

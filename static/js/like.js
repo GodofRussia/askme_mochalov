@@ -6,7 +6,7 @@ for (let i = 0; i < likes.length; ++i) {
 
 $(".plus").on('click', function () {
       const request = new Request(
-          'http://127.0.0.1:8000/like/',
+          'http://127.0.0.1/like/',
           {
               method: 'POST',
               headers: {
@@ -43,7 +43,7 @@ $(".plus").on('click', function () {
 
 $(".minus").on('click', function () {
       const request = new Request(
-          'http://127.0.0.1:8000/like/',
+          'http://127.0.0.1/like/',
           {
               method: 'POST',
               headers: {
