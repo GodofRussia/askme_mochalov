@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/ilya/PycharmProjects/askme_mochalov/venv/bin/python
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

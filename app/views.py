@@ -1,6 +1,6 @@
 import string
-import json
 import time
+import json
 
 import jwt
 from django.contrib import auth
@@ -21,7 +21,7 @@ from .models import paginate
 from cent import Client
 
 # initialize client instance.
-client = Client(CENTRIFUGO_URL, api_key=CENTRIFUGO_API_KEY, timeout=1)
+client = Client(CENTRIFUGO_URL, api_key=CENTRIFUGO_API_KEY, timeout=4, verify=False)
 
 
 def save_in_cache():
@@ -43,27 +43,21 @@ def index(request):
         questions = models.Question.objects
     except models.Question.DoesNotExist:
         raise Http404
-    new_questions = questions.get_new_questions()
+    new_questions = list(questions.get_new_questions())
     try:
         page_number = int(request.GET.get('page', 1))
     except ValueError:
         raise HttpResponseBadRequest
     page_object = paginate(new_questions, page_number, 3)
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'questions': page_object.object_list,
         'page_object': page_object,
-        # 'top_tags': top_tags,
-        # 'best_members': best_members
     }
     return render(request, 'index.html', context=context)
 
 
 def question(request, question_id: int):
     question_item = get_object_or_404(models.Question, id=question_id)
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     if request.method == "GET":
         answer_form = forms.AnswerForm()
     if request.method == 'POST':
@@ -80,13 +74,12 @@ def question(request, question_id: int):
         page_number = int(request.GET.get('page', 1))
     except ValueError:
         raise HttpResponseBadRequest
-    page_object = paginate(question_item.answers.all(), page_number, 2)
+    page_object = paginate(list(question_item.answers.all()), page_number, 2)
     context = {}
     if request.user.is_authenticated:
         user_id = request.user.id
-        context['secret_token'] = jwt.encode({"sub": user_id, "exp": int(time.time()) + 10 * 60},
-                                             CENTRIFUGO_TOKEN_HMAC_SECRET_KEY)
-        context['cent_canal'] = f'question_{question_id}'
+        context['secret_token'] = jwt.encode({"sub": f'{user_id}'}, CENTRIFUGO_TOKEN_HMAC_SECRET_KEY, algorithm="HS256")
+        context['cent_canal'] = f'channel{question_id}'
         context['cent_ws_url'] = CENTRIFUGO_WS_URL
 
     context.update({
@@ -111,8 +104,6 @@ def ask(request):
             else:
                 return HttpResponse("Please sign in to make an answer!")
 
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'form': question_form
     }
@@ -134,8 +125,6 @@ def login_user(request):
             else:
                 user_form.add_error(field=None, error="Wrong username or password!")
 
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'form': user_form,
     }
@@ -156,8 +145,6 @@ def signup(request):
             else:
                 user_form.add_error(field=None, error="Wrong user saving!")
 
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'form': user_form,
     }
@@ -175,8 +162,6 @@ def settings(request):
         if user_form.is_valid():
             user_form.save()
         return HttpResponseRedirect(reverse('settings'))
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'form': user_form
     }
@@ -196,14 +181,12 @@ def hot(request):
         questions = models.Question
     except models.Question.DoesNotExist:
         raise Http404
-    top_questions = questions.objects.get_hot_questions()
+    top_questions = list(questions.objects.get_hot_questions())
     try:
         page_number = int(request.GET.get('page', 1))
     except ValueError:
         raise HttpResponseBadRequest
     page_object = paginate(top_questions, page_number, 3)
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'questions': page_object.object_list,
         'page_object': page_object,
@@ -217,14 +200,12 @@ def tag(request, tag_name: string):
         questions = models.Question
     except models.Question.DoesNotExist:
         raise Http404
-    questions_by_tag = questions.objects.get_questions_by_tag(tag_name)
+    questions_by_tag = list(questions.objects.get_questions_by_tag(tag_name))
     try:
         page_number = int(request.GET.get('page', 1))
     except ValueError:
         raise HttpResponseBadRequest
     page_object = paginate(questions_by_tag, page_number, 3)
-    top_tags = models.Tag.objects.get_top_tags
-    best_members = models.Profile.objects.get_top_members()
     context = {
         'questions': page_object.object_list,
         'tag_name': tag_name,

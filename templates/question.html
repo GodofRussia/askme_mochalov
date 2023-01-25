@@ -46,15 +46,25 @@
 {% endblock %}
 
 {% block jscode %}
+{#    <script src="https://unpkg.com/centrifuge@3.1.0/dist/centrifuge.js"></script>#}
     <script src="https://unpkg.com/centrifuge@3.1.0/dist/centrifuge.js"></script>
+    <script src="{% static "js/jwt-decode.js" %}"> </script>
     {% if request.user.is_authenticated %}
         <script>
-            var centrifuge = new Centrifuge ("{{ cent_ws_url }}", { token: "{{ secret_token }}" });
-            var sub = centrifuge.newSubscription("{{ cent_canal }}");
+            console.log("{{ secret_token }}");
+            {#decoded = jwt_decode("{{ secret_token }}")#}
+            const centrifuge = new Centrifuge ("{{ cent_ws_url }}", { token: "{{ secret_token }}" });
+            // , { token: "{{ secret_token }}" }
+            {#centrifuge.setToken("{{ secret_token }}");#}
+            const sub = centrifuge.newSubscription("{{ cent_canal }}");
             console.log("{{ cent_canal }}");
             sub.on("publication", function (message) {
                 console.log(message.data);
+                alert('new message');
             });
+            // centrifuge.subscribe("{{ cent_canal }}", function (message) {
+            //    console.log(message.data);
+            //})
             sub.subscribe();
             centrifuge.connect();
         </script>

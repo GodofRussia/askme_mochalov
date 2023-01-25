@@ -1,3 +1,4 @@
+#!/home/ilya/PycharmProjects/askme_mochalov/venv/bin/python
 from django.core.management import BaseCommand
 
 from app.views import save_in_cache
