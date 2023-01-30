@@ -60,11 +60,14 @@
             console.log("{{ cent_canal }}");
             sub.on("publication", function (message) {
                 console.log(message.data);
-                alert('new message');
+                fetch(
+                    "http://127.0.0.1/"
+                )
             });
             // centrifuge.subscribe("{{ cent_canal }}", function (message) {
             //    console.log(message.data);
             //})
+
             sub.subscribe();
             centrifuge.connect();
         </script>
