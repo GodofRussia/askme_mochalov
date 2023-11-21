@@ -1,0 +1,14 @@
+{
+  "token_hmac_secret_key": "secretkeyabc",
+  "admin_password": "c6828034-4dc2-402e-b229-fb28bcaab0ce",
+  "admin_secret": "6f866e1b-b167-4d24-990b-c4a834bb84d1",
+  "api_key": "fc7d5c05-9989-470e-a5c5-fc65628d534c",
+  "presence": true,
+  "allow_subscribe_for_client": true,
+  "allow_publish_for_subscriber": true,
+  "allowed_origins": [
+    "http://127.0.0.1:9090",
+    "localhost",
+    "http://127.0.0.1"
+  ]
+}

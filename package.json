@@ -1,0 +1,7 @@
+{
+  "name": "askme_mochalov",
+  "version": "1.0.0",
+  "dependencies": {
+    "jwt-decode": "^3.1.2"
+  }
+}

@@ -1,0 +1,25 @@
+{% load static %}
+
+<div class="answer">
+    <div class="row">
+        <div class="col-2">
+            <div class="avatar">
+                <img src="{{ answer.profile.avatar.url }}" alt="" />
+            </div>
+            <div class="like" data-is-question="False" data-count="{{ answer.rating }}" data-id="{{ answer.id }}">
+                <span class="plus cursor" >+</span> <span class="minus cursor">-</span> <span class="counter">{{answer.rating}}</span>
+            </div>
+        </div>
+        <div class="col-10">
+            <div class="question-text">
+                {{ answer.text }}
+            </div>
+            <form class="form-check">
+                <input class="form-check-input check-correct" type="checkbox" id="disabledFieldsetCheck" data-status="{{ answer.is_correct }}" data-question-id="{{ question.id }}" data-id="{{ answer.id }}" {% if answer.is_correct %} checked {% endif %} {% if question.profile.user != request.user %} disabled {% endif %}>
+                <label class="form-check-label" for="disabledFieldsetCheck">
+                    Correct
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
