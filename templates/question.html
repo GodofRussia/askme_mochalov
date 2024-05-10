@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% load static %}
+
+
+{% block content %}
+<div class="single-question">
+    <div class="row">
+        <div class="col-2">
+            <div class="question-avatar">
+                <img src="{{ question.profile.avatar.url }}" alt="" />
+            </div>
+            <div class="like" data-is-question="True" data-count="{{ question.rating }}" data-id="{{ question.id }}">
+                <span class="plus cursor" >+</span> <span class="minus cursor">-</span> <span class="counter">{{ question.rating }}</span>
+            </div>
+        </div>
+        <div class="col-10">
+            <h2 class="question-title">{{ question.title }}</h2>
+            <div class="question-text">
+                {{ question.text }}
+            </div>
+            <div class="row">
+            <p>Tags:
+                {% for tag in question.get_tags %}
+                     <a href="{% url 'tag' tag_name=tag.tag_name %}">{{ tag }}</a>
+                {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+    <hr style="color: black">
+    {% for answer in answers %}
+        <div {% if forloop.last is True %} id="contact" {% endif %}>
+            {% include 'include/answer_temp.html' %}
+        </div>
+    {% endfor %}
+    {% include 'include/paginator.html' %}
+        <hr style="color: black">
+    <form class="form-floating" method="post"> {% csrf_token %}
+    {% bootstrap_form form %}
+{#        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>#}
+{#        <label for="floatingTextarea2">Enter your answer here</label>#}
+        <button class="col-md-2 mb-3 mt-3 btn btn-outline-success" type="submit">Answer</button>
+    </form>
+{% endblock %}
+
+{% block jscode %}
+{#    <script src="https://unpkg.com/centrifuge@3.1.0/dist/centrifuge.js"></script>#}
+    <script src="https://unpkg.com/centrifuge@3.1.0/dist/centrifuge.js"></script>
+    <script src="{% static "js/jwt-decode.js" %}"> </script>
+    {% if request.user.is_authenticated %}
+        <script>
+            console.log("{{ secret_token }}");
+            {#decoded = jwt_decode("{{ secret_token }}")#}
+            const centrifuge = new Centrifuge ("{{ cent_ws_url }}", { token: "{{ secret_token }}" });
+            // , { token: "{{ secret_token }}" }
+            {#centrifuge.setToken("{{ secret_token }}");#}
+            const sub = centrifuge.newSubscription("{{ cent_canal }}");
+            console.log("{{ cent_canal }}");
+            sub.on("publication", function (message) {
+                console.log(message.data);
+                fetch(
+                    "http://127.0.0.1/"
+                )
+            });
+            // centrifuge.subscribe("{{ cent_canal }}", function (message) {
+            //    console.log(message.data);
+            //})
+
+            sub.subscribe();
+            centrifuge.connect();
+        </script>
+        {% endif %}
+{% endblock %}

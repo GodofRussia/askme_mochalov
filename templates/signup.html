@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap5 %}
+
+{% block title %}
+     <h1>Registration</h1>
+{% endblock %}
+
+{% block content %}
+    <form class="row g-3 mt-2" action="{% url 'signup' %}" method="post" enctype="multipart/form-data" > {% csrf_token %}
+            {% bootstrap_form form %}
+{#        <label for="inputTitle" class="col-sm-3 col-form-label">Login</label>#}
+{#            <div class="col-sm-6">#}
+{#                <div class="input-group has-validation">#}
+{#                    <input name = "login" type="text" class="form-control" id="validationTooltip03" required>#}
+{#                    <div id="validationServer03Feedback" class="invalid-feedback">#}
+{#                        Please enter a login.#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        <div class="col-sm-3"></div>#}
+{#        <label for="inputTitle" class="col-sm-3 col-form-label">Email</label>#}
+{#            <div class="col-sm-6">#}
+{#                <div class="input-group has-validation">#}
+{#                    <label for="validationServer03"></label>#}
+{#                    <input name = "email" type="text" class="form-control" id="validationTooltip03" required>#}
+{#                    <div id="validationServer03Feedback" class="invalid-feedback">#}
+{#                        Please enter an Email.#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-sm-3"></div>#}
+{#        <label for="inputTitle" class="col-sm-3 col-form-label">NickName</label>#}
+{#            <div class="col-sm-6">#}
+{#                <div class="input-group has-validation">#}
+{#                    <label for="validationTooltip03"></label>#}
+{#                    <input name = "nickname" type="text" class="form-control" id="validationTooltip03" required>#}
+{#                    <div id="validationServer03Feedback" class="invalid-feedback">#}
+{#                        Please enter a nickname.#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-sm-3"></div>#}
+{#        <label for="inputTitle" class="col-sm-3 col-form-label mt-5">Password</label>#}
+{#            <div class="col-sm-6 mt-5">#}
+{#                <div class="input-group has-validation">#}
+{#                    <label for="validationTooltip03"></label>#}
+{#                    <input name = "password" type="text" class="form-control" id="validationTooltip03" required>#}
+{#                    <div id="validationServer03Feedback" class="invalid-feedback">#}
+{#                        Please enter a password.#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-sm-3"></div>#}
+{#        <label for="inputTitle" class="col-sm-3 col-form-label">Repeat password</label>#}
+{#            <div class="col-sm-6">#}
+{#                <div class="input-group has-validation">#}
+{#                    <label for="validationTooltip03"></label>#}
+{#                    <input name = "repeated_password" type="text" class="form-control" id="validationTooltip03" required>#}
+{#                    <div id="validationServer03Feedback" class="invalid-feedback">#}
+{#                        Please enter a password.#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-sm-3"></div>#}
+{##}
+{#        <label for="inputTitle" class="col-3 col-form-label">Upload avatar</label>#}
+{#        <div class="col-6">#}
+{#            <input name = "avatar" type="file" class="form-control" aria-label="file example" required>#}
+{#            <div class="invalid-feedback">Example invalid form file feedback</div>#}
+{#        </div>#}
+{#        <div class="col-3"></div>#}
+{##}
+{#        <div class="col-3">#}
+{#        </div>#}
+        <div class="col-9">
+            <button class="btn btn-primary mt-3" type="submit">Register</button>
+        </div>
+    </form>
+{% endblock %}

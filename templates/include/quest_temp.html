@@ -1,0 +1,32 @@
+{% load static %}
+
+<div class="question">
+    <div class="row">
+        <div class="col-2">
+            <div class="avatar">
+                <img src="{{ question.profile.avatar.url }}" alt="" />
+            </div>
+            <div class="like" data-is-question="True" data-count="{{ question.rating }}" data-id="{{ question.id }}">
+                <span class="plus cursor">+</span> <span class="minus cursor">-</span> <span class="counter"></span>
+            </div>
+        </div>
+        <div class="col-10">
+            <h2 class="question-title" href="{% url 'question' question_id=question.id %}">{{question.title}}</h2>
+            <div class="question-text">
+                {{ question.text }}
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="{% url 'question' question_id=question.id %}">answers({{ question.get_answers_count }})</a>
+                </div>
+                <div class="col">
+                <p>Tags:
+                    {% for tag in question.get_tags %}
+                     <a href="{% url 'tag' tag_name=tag.tag_name %}">{{ tag }}</a>
+                    {% endfor %}
+                </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
